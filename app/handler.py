@@ -48,7 +48,7 @@ class UpdateStatusHandler(tornado.web.RequestHandler):
 
         data = tornado.escape.json_decode(self.request.body)
 
-        user_id = data.get('username')
+        user_id = data.get('user_id')
         string = data.get('message')
 
         sql = "Insert INTO status (user_id, value) VALUES (%s, %s)"
@@ -71,7 +71,7 @@ class SendMessageHandler(tornado.web.RequestHandler):
 
         user_id = data.get('user_id')
         payload = data.get('paylaod')
-        queue_id = data.get('user_id')
+        queue_id = data.get('queue_id')
 
         response = yield notification.send_message(user_id, payload, queue_id)
 
