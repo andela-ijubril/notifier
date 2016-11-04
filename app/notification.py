@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 import boto3
 from tornado import concurrent, ioloop
 
-# from app.settings import connection, cursor
 
 from app.config import connection, cursor
 
@@ -65,7 +64,7 @@ class Notification(object):
     @concurrent.run_on_executor
     def create_queue(self, user_id):
 
-        queue_name = str("Dev-"+user_id+"-"+create_timestamp())  # TODO: get the environment name from a method or a cleaner way
+        queue_name = str("Dev-"+user_id+"-"+create_timestamp())
 
         queue = self.sqs.create_queue(QueueName=queue_name, Attributes={'DelaySeconds': '5'})
         queue_url = queue.url

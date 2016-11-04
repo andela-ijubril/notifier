@@ -21,7 +21,8 @@ class CreateQueueHandler(tornado.web.RequestHandler):
 
     @gen.coroutine
     def post(self, *args, **kwargs):
-        user_id = self.get_argument('user_id')
+        data = tornado.escape.json_decode(self.request.body)
+        user_id = data.get('user_id')
 
         queue_info = yield notification.create_queue(str(user_id))
         self.write(queue_info)
@@ -31,9 +32,10 @@ class AcknowledgeMessagehandler(tornado.web.RequestHandler):
 
     @gen.coroutine
     def post(self, *args, **kwargs):
-        user_id = self.get_argument('user_id')
-        message_id = self.get_argument('message_id')
-        queue_id = self.get_argument('queue_id')
+        data = tornado.escape.json_decode(self.request.body)
+        user_id = data.get('user_id')
+        message_id = data.get('message_id')
+        queue_id = data.get('queue_id')
 
         has_acknowledged = yield notification.acknowledge_message(user_id, queue_id, message_id)
 
@@ -65,9 +67,11 @@ class SendMessageHandler(tornado.web.RequestHandler):
 
     @gen.coroutine
     def post(self, *args, **kwargs):
-        user_id = self.get_argument('user_id')
-        payload = self.get_argument('paylaod')
-        queue_id = self.get_argument('user_id')
+        data = tornado.escape.json_decode(self.request.body)
+
+        user_id = data.get('user_id')
+        payload = data.get('paylaod')
+        queue_id = data.get('user_id')
 
         response = yield notification.send_message(user_id, payload, queue_id)
 

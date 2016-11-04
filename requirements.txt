@@ -1,0 +1,4 @@
+boto3==1.4.1
+botocore==1.4.68
+PyMySQL==0.7.9
+tornado==4.4.2
