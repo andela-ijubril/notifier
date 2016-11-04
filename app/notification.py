@@ -87,13 +87,10 @@ class Notification(object):
     @concurrent.run_on_executor
     def send_message(self, user_id, payload, queue_id):
 
-
         queue = self.sqs.get_queue_by_name(QueueName=self.get_queue_name(queue_id))
 
-        # response = queue.send_message(MessageBody='testing world', MessageAttributes=payload)
         response = queue.send_message(MessageBody=payload)
 
-        # sql = "INSERT INTO message (user_id, queue_id, details) VALUES (%s, %s, %s)"
         sql = "INSERT INTO message (user_id, queue_id) VALUES (%s, %s)"
         cursor.execute(sql, (user_id, queue_id))
         connection.commit()
