@@ -1,0 +1,10 @@
+import pymysql
+
+connection = pymysql.connect(host='localhost',
+                                  user='YOUR_USERNAME',
+                                  password='YOUR_PASSWORD',
+                                  db='DATABASE_NAME',
+                                  charset='utf8mb4',
+                                  cursorclass=pymysql.cursors.DictCursor)
+
+cursor = connection.cursor(pymysql.cursors.DictCursor)
