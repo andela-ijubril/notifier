@@ -4,7 +4,9 @@ from concurrent.futures import ThreadPoolExecutor
 import boto3
 from tornado import concurrent, ioloop
 
-from app.settings import connection, cursor
+# from app.settings import connection, cursor
+
+from app.config import connection, cursor
 
 
 def create_timestamp():
@@ -72,15 +74,15 @@ class Notification(object):
             "queue_url": str(queue_url),
             "time_created": str(create_timestamp()),
             "id_of_last_read_message": 2,
-            "no_of_messages_sent": 0,  # TODO: implement the next 3 as methods
+            "no_of_messages_sent": 0,
             'id_of_last_message': 0,
             'id_of_last_message_acknowledge': 0
         }
 
+
         sql = "INSERT INTO queue (user_id, url, no_of_msg_sent, id_of_last_msg, name) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(sql, (user_id, queue_info['queue_url'], 0, 0, queue_info['queue_name']))
         connection.commit()
-        connection.close()
 
         return queue_info
 

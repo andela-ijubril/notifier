@@ -1,5 +1,5 @@
 import json
-import time
+
 
 import tornado.escape
 import tornado.httpserver
@@ -7,11 +7,11 @@ import tornado.ioloop
 import tornado.web
 from bson import json_util
 from tornado import gen
-from tornado.options import define
+
 
 from app.notification import Notification
 
-from app.settings import connection, cursor
+from app.config import connection, cursor
 
 
 notification = Notification()
@@ -42,15 +42,6 @@ class AcknowledgeMessagehandler(tornado.web.RequestHandler):
 
 class UpdateStatusHandler(tornado.web.RequestHandler):
 
-    @property
-    def db(self):
-        return self.application.db
-
-    @property
-    def cursor(self):
-        return self.application.cur
-
-
     def post(self, *args, **kwargs):
 
         data = tornado.escape.json_decode(self.request.body)
@@ -62,13 +53,11 @@ class UpdateStatusHandler(tornado.web.RequestHandler):
         cursor.execute(sql, (user_id, string))
         connection.commit()
 
-
-
         sql = "SELECT * FROM queue WHERE user_id=%s"
         cursor.execute(sql, (user_id))
-        queues = self.cursor.fetchall()
+        queues = cursor.fetchall()
         connection.close()
-    
+
         self.write(json.dumps(queues, default=json_util.default))
 
 
@@ -83,8 +72,3 @@ class SendMessageHandler(tornado.web.RequestHandler):
         response = yield notification.send_message(user_id, payload, queue_id)
 
         self.write(response)
-
-
-def create_timestamp():
-    return str(int(time.time()))
-
