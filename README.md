@@ -23,7 +23,9 @@ python runserver.py
 
 You can test the functionality on postman
 
+```
 POST /create_queue body(user_id)
 POST /update_status body(user_id, message)
 POST /send   body(user_id, payload, queue_id)
 POST /acknowledge body(user_id, message_id, queue_id)
+```
