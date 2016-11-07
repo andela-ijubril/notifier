@@ -1,16 +1,10 @@
-import json
-
-
 import tornado.escape
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
-from bson import json_util
 from tornado import gen
 
-
 from app.notification import Notification
-
 from app.config import connection, cursor
 
 
@@ -47,7 +41,6 @@ class UpdateStatusHandler(tornado.web.RequestHandler):
     def post(self, *args, **kwargs):
 
         data = tornado.escape.json_decode(self.request.body)
-
         user_id = data.get('user_id')
         string = data.get('message')
 
@@ -55,12 +48,7 @@ class UpdateStatusHandler(tornado.web.RequestHandler):
         cursor.execute(sql, (user_id, string))
         connection.commit()
 
-        sql = "SELECT * FROM queue WHERE user_id=%s"
-        cursor.execute(sql, (user_id))
-        queues = cursor.fetchall()
-        connection.close()
-
-        self.write(json.dumps(queues, default=json_util.default))
+        self.write("status updated")
 
 
 class SendMessageHandler(tornado.web.RequestHandler):
@@ -68,7 +56,6 @@ class SendMessageHandler(tornado.web.RequestHandler):
     @gen.coroutine
     def post(self, *args, **kwargs):
         data = tornado.escape.json_decode(self.request.body)
-
         user_id = data.get('user_id')
         payload = data.get('paylaod')
         queue_id = data.get('queue_id')

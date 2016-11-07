@@ -4,7 +4,6 @@ from concurrent.futures import ThreadPoolExecutor
 import boto3
 from tornado import concurrent, ioloop
 
-
 from app.config import connection, cursor
 
 
@@ -28,9 +27,7 @@ class Notification(object):
         return queue_name
 
     def _is_queue_active(self, queue_id):
-
         sql = "SELECT acknowledgement.message_id, queue.id_of_last_msg_acknowledged FROM acknowledgement INNER JOIN queue ON acknowledgement.queue_id=queue.id WHERE queue.id=%s ORDER BY acknowledgement.message_id"
-
         cursor.execute(sql, (queue_id))
         messages = cursor.fetchall()
 
@@ -41,7 +38,6 @@ class Notification(object):
             return False
 
     def _delete_queue(self, queue_id):
-
         queue = self.sqs.get_queue_by_name(QueueName=self.get_queue_name())
         queue.delete()
         sql = "DELETE FROM queue WHERE id=%s"
@@ -51,7 +47,6 @@ class Notification(object):
         return {"message": "queue is successfully deleted"}
 
     def _delete_message(self, queue_id, message_id):
-
         queue = self.sqs.get_queue_by_name(QueueName=self.get_queue_name(queue_id))
 
         for message in queue.receive_messages():
@@ -63,10 +58,8 @@ class Notification(object):
 
     @concurrent.run_on_executor
     def create_queue(self, user_id):
-
         queue_name = str("Dev-"+user_id+"-"+create_timestamp())
-
-        queue = self.sqs.create_queue(QueueName=queue_name, Attributes={'DelaySeconds': '5'})
+        queue = self.sqs.create_queue(QueueName=queue_name)
         queue_url = queue.url
         queue_info = {
             "queue_name": queue_name,
@@ -78,7 +71,6 @@ class Notification(object):
             'id_of_last_message_acknowledge': 0
         }
 
-
         sql = "INSERT INTO queue (user_id, url, no_of_msg_sent, id_of_last_msg, name) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(sql, (user_id, queue_info['queue_url'], 0, 0, queue_info['queue_name']))
         connection.commit()
@@ -89,7 +81,6 @@ class Notification(object):
     def send_message(self, user_id, payload, queue_id):
 
         queue = self.sqs.get_queue_by_name(QueueName=self.get_queue_name(queue_id))
-
         response = queue.send_message(MessageBody=payload)
 
         sql = "INSERT INTO message (user_id, queue_id) VALUES (%s, %s)"

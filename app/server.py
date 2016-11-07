@@ -4,7 +4,6 @@ import tornado.ioloop
 import tornado.web
 
 from app.handler import CreateQueueHandler, UpdateStatusHandler, SendMessageHandler, AcknowledgeMessagehandler
-
 from app.settings import settings
 from app.config import connection
 
